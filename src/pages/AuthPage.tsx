@@ -15,9 +15,11 @@ const AuthPage = () => {
     e.preventDefault()
     setLoading(true)
     setMessage('')
+    console.log('AuthPage: Starting auth process...', isSignUp ? 'Sign Up' : 'Sign In')
 
     try {
       if (isSignUp) {
+        console.log('AuthPage: Attempting sign up...')
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -25,18 +27,23 @@ const AuthPage = () => {
             data: {
               full_name: fullName,
             },
+            emailRedirectTo: `${window.location.origin}/`
           },
         })
         if (error) throw error
+        console.log('AuthPage: Sign up successful')
         setMessage('Check your email for the confirmation link!')
       } else {
+        console.log('AuthPage: Attempting sign in...')
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
         if (error) throw error
+        console.log('AuthPage: Sign in successful')
       }
     } catch (error) {
+      console.error('AuthPage: Auth error:', error)
       setMessage(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setLoading(false)
